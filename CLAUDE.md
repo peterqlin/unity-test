@@ -73,11 +73,23 @@ All custom game scripts live in `unity/Assets/_Scripts/` and `unity/Assets/Sourc
 | `UpdateCollectibleCount.cs` | UI script that counts remaining `Pickup` objects and updates a TextMeshProUGUI display |
 | `MotionAudioController.cs` | Plays/fades audio based on whether the player is moving |
 | `LocalAPICall.cs` | Makes a GET request to `http://127.0.0.1:8000/` on `Start()` and logs the response |
+| `SceneData.cs` | Serializable C# classes mirroring the API schema (`SceneRequestData`, `SceneResponseData`, `SceneObjectData`, `Vec3Data`, `ColorData`) |
+| `SceneBuilder.cs` | POSTs a description to `/scene/generate`, clears the previous scene, and spawns Unity primitives from the response JSON |
 
 ### Unity–Backend Integration
 
-`LocalAPICall.cs` (attached to a scene GameObject) calls the local FastAPI server using `UnityWebRequest` as a coroutine. The backend must be running before entering Play Mode:
+The backend must be running before entering Play Mode:
 
 ```bash
 cd backend && uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
+
+**SceneBuilder setup** (one-time per scene):
+1. Create an empty GameObject, attach `SceneBuilder.cs`
+2. Optionally create a child empty GameObject and assign it to **Scene Root** in the Inspector (auto-created if blank)
+3. Set **Scene Description** in the Inspector to drive scene generation
+4. Tags `Ground`, `Obstacle`, `Collectible` are pre-registered in `ProjectSettings/TagManager.asset`
+
+`SceneBuilder` calls `GenerateScene()` on `Start()`. During Play Mode you can also right-click the component and choose **Generate Scene** to re-generate without restarting.
+
+**Color note:** The project uses URP. `ApplyColor` sets both `_BaseColor` (URP/Lit) and `_Color` (Built-in RP) so it works regardless of which shader is on the primitive's default material.
