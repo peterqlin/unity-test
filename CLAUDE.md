@@ -15,12 +15,42 @@ The backend uses Python 3.13+ with `uv`. Always run commands from the `backend/`
 
 ```bash
 cd backend
-uv run fastapi dev app/main.py   # Start dev server at http://127.0.0.1:8000
-uv add <package>                 # Add a dependency
-uv sync                          # Install/sync from uv.lock
+uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload   # Dev server
+uv add <package>                                                      # Add dependency
+uv sync                                                               # Install from uv.lock
 ```
 
+> **Note:** `fastapi dev` crashes on Windows due to an emoji encoding issue in fastapi-cli. Use `uvicorn` directly as shown above.
+
 Settings are loaded via `app/core/config.py` (pydantic-settings). Create a `backend/.env` with `DATABASE_URL` and `SECRET_KEY` before running.
+
+### API Endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| `GET` | `/` | Health check |
+| `POST` | `/scene/generate` | Accept a scene description, return structured scene JSON |
+
+**`POST /scene/generate`** request body:
+```json
+{ "description": "a grassy arena with pillars" }
+```
+
+Response schema (`SceneResponse`): a list of `objects`, each with:
+
+| Field | Type | Notes |
+|---|---|---|
+| `name` | string | Unique label for the object |
+| `type` | enum | `cube` \| `sphere` \| `cylinder` \| `plane` \| `capsule` |
+| `position` | `{x, y, z}` | World-space position |
+| `rotation` | `{x, y, z}` | Euler angles in degrees |
+| `scale` | `{x, y, z}` | Local scale |
+| `color` | `{r, g, b}` | Normalized 0–1 float values |
+| `has_collider` | bool | Whether to add a collider |
+| `is_trigger` | bool | If true, collider is a trigger zone |
+| `tag` | string | Unity tag (e.g. `"Ground"`, `"Obstacle"`, `"Collectible"`) |
+
+Pydantic models live in `backend/app/models/scene.py`. The router is at `backend/app/routers/scene.py`. Currently returns a hardcoded mock scene; will be replaced with a real LLM call.
 
 ## Unity
 
@@ -46,4 +76,8 @@ All custom game scripts live in `unity/Assets/_Scripts/` and `unity/Assets/Sourc
 
 ### Unity–Backend Integration
 
-`LocalAPICall.cs` (attached to a scene GameObject) calls the local FastAPI server using `UnityWebRequest` as a coroutine. The backend must be running (`uv run fastapi dev app/main.py`) before entering Play Mode for the API call to succeed.
+`LocalAPICall.cs` (attached to a scene GameObject) calls the local FastAPI server using `UnityWebRequest` as a coroutine. The backend must be running before entering Play Mode:
+
+```bash
+cd backend && uv run uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```

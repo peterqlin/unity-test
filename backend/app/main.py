@@ -1,6 +1,9 @@
 from fastapi import FastAPI
+from app.routers import scene
 
-app = FastAPI()
+app = FastAPI(title="Unity Scene Generator API")
+
+app.include_router(scene.router)
 
 
 @app.get("/")
