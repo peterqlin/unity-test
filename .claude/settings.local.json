@@ -3,7 +3,8 @@
     "allow": [
       "Bash(uv run:*)",
       "Bash(curl:*)",
-      "Bash(uv add:*)"
+      "Bash(uv add:*)",
+      "Bash(GOOGLE_CLOUD_PROJECT=test-project uv run:*)"
     ]
   }
 }
