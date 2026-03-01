@@ -36,9 +36,23 @@ public class SceneObjectData
 }
 
 [Serializable]
+public class LightObjectData
+{
+    public string name;
+    public string light_type; // "directional" | "point" | "spot"
+    public Vec3Data position;
+    public Vec3Data rotation; // Euler angles in degrees; sets light direction for directional/spot
+    public ColorData color;   // Normalized 0–1 floats
+    public float intensity;
+    public float range;       // Point and spot only (world units)
+    public float spot_angle;  // Spot only (degrees)
+}
+
+[Serializable]
 public class SceneResponseData
 {
     public List<SceneObjectData> objects;
+    public List<LightObjectData> lights; // May be null if backend returns no lights field
 }
 
 // Sent to POST /scene/generate

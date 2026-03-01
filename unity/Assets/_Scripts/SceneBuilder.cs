@@ -4,8 +4,8 @@ using UnityEngine.Networking;
 
 /// <summary>
 /// POSTs a scene description to the backend, then spawns Unity primitives
-/// matching the returned scene JSON. All generated objects are parented to
-/// a root transform so they can be cleared cleanly on re-generation.
+/// and lights matching the returned scene JSON. All generated objects are
+/// parented to a root transform so they can be cleared cleanly on re-generation.
 ///
 /// Setup:
 ///   1. Attach to an empty GameObject in the scene.
@@ -96,7 +96,17 @@ public class SceneBuilder : MonoBehaviour
             ApplyTag(go, obj.tag);
         }
 
-        Debug.Log($"[SceneBuilder] Built scene with {response.objects.Count} objects.");
+        int lightCount = 0;
+        if (response.lights != null)
+        {
+            foreach (LightObjectData light in response.lights)
+            {
+                SpawnLight(light);
+                lightCount++;
+            }
+        }
+
+        Debug.Log($"[SceneBuilder] Built scene with {response.objects.Count} objects and {lightCount} lights.");
     }
 
     private void EnsureSceneRoot()
@@ -123,6 +133,39 @@ public class SceneBuilder : MonoBehaviour
             default:
                 Debug.LogWarning($"[SceneBuilder] Unknown primitive type: '{type}'");
                 return null;
+        }
+    }
+
+    private void SpawnLight(LightObjectData data)
+    {
+        GameObject go = new GameObject(data.name);
+        go.transform.SetParent(sceneRoot, worldPositionStays: false);
+        go.transform.localPosition = data.position.ToVector3();
+        go.transform.localEulerAngles = data.rotation.ToVector3();
+
+        Light light = go.AddComponent<Light>();
+        light.color = data.color.ToColor();
+        light.intensity = data.intensity;
+
+        switch (data.light_type)
+        {
+            case "directional":
+                light.type = LightType.Directional;
+                break;
+            case "point":
+                light.type = LightType.Point;
+                light.range = data.range;
+                break;
+            case "spot":
+                light.type = LightType.Spot;
+                light.range = data.range;
+                light.spotAngle = data.spot_angle;
+                break;
+            default:
+                Debug.LogWarning($"[SceneBuilder] Unknown light type: '{data.light_type}', defaulting to Point.");
+                light.type = LightType.Point;
+                light.range = data.range;
+                break;
         }
     }
 

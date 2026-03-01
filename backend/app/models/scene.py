@@ -10,6 +10,12 @@ class PrimitiveType(str, Enum):
     capsule = "capsule"
 
 
+class LightType(str, Enum):
+    directional = "directional"
+    point = "point"
+    spot = "spot"
+
+
 class Vec3(BaseModel):
     x: float
     y: float
@@ -34,9 +40,21 @@ class SceneObject(BaseModel):
     tag: str = "Untagged"
 
 
+class LightObject(BaseModel):
+    name: str
+    light_type: LightType
+    position: Vec3
+    rotation: Vec3        # Euler angles; directional/spot lights use this for direction
+    color: Color
+    intensity: float      # directional: 1–2, point/spot: 0.5–5
+    range: float          # point and spot only (units); ignored for directional
+    spot_angle: float     # spot only (degrees, 1–179); ignored for other types
+
+
 class SceneRequest(BaseModel):
     description: str
 
 
 class SceneResponse(BaseModel):
     objects: list[SceneObject]
+    lights: list[LightObject] = Field(default_factory=list)
