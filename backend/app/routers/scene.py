@@ -1,10 +1,9 @@
 import json
 import logging
 
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.models.scene import SceneRequest, SceneResponse
-from app.services import scene_agent
-from app.services import scene_log
+from app.services import gcs, scene_agent, scene_log
 from app.services.scene_log import LOG_DIR
 
 logger = logging.getLogger(__name__)
@@ -39,4 +38,22 @@ async def generate_scene(request: SceneRequest) -> SceneResponse:
         source = "mock"
 
     scene_log.save(request.description, scene, source=source)
+    return scene
+
+
+@router.get("/load/{session_id}", response_model=SceneResponse)
+def load_scene(session_id: str) -> SceneResponse:
+    """
+    Load the final scene for a given session from GCS and return it to Unity.
+    The session_id is the UUID subfolder under scenes/ in the GCS bucket.
+    Returns 404 if no final scene has been saved for that session.
+    """
+    logger.info(f'Scene load requested — session_id="{session_id}"')
+    try:
+        scene = gcs.load_final_scene(session_id)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:
+        logger.exception(f"Failed to load scene from GCS: {exc}")
+        raise HTTPException(status_code=500, detail="Failed to load scene from GCS")
     return scene

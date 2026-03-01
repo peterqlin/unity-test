@@ -328,6 +328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 603036177}
   - component: {fileID: 603036176}
+  - component: {fileID: 603036178}
   m_Layer: 0
   m_Name: SceneManager
   m_TagString: Untagged
@@ -348,28 +349,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneBuilder
   apiUrl: http://127.0.0.1:8000/scene/generate
-  sceneDescription: "Create a European-style metropolitan city using only Unity primitives
-    (Plane, Cube, Cylinder, Sphere, Capsule) within a 500m x 500m square area. Use
-    one large ground plane and generate a structured grid layout with 5 east-west
-    and 5 north-south main roads (12m wide) evenly spaced, plus smaller 6m side streets
-    forming city blocks. Add 3m sidewalks slightly raised from the roads, lane markings,
-    intersections, and crosswalks. Fill every block with buildings (minimum 25\u201340
-    total) aligned to roads and spaced at least 5m apart. Include 15\u201320 residential
-    buildings (4\u20136 floors, pastel colors, repeated window grids, simple angled
-    roofs), 5\u201310 modern office buildings (8\u201315 floors, glass-style materials,
-    flat roofs), one 20+ floor central skyscraper (70\u201390m tall), and one 6\u20138
-    floor historic landmark building with columns (cylinders) and a dome (sphere).
-    Ensure consistent scale, no overlapping objects, and realistic proportions. Add
-    a 60m x 60m central plaza with a stone-colored plane, a fountain (cylinder base,
-    smaller cylinder tier, sphere top), benches (cubes), and 10\u201320 trees (cylinder
-    trunks, sphere foliage). Include 2\u20133 parks (40m x 40m) with green surfaces,
-    walking paths, trees, and optional ponds. Populate sidewalks with 40\u201360
-    street trees, 20\u201330 streetlights (cylinder poles, sphere lights), and 10\u201320
-    simple cars (cube bodies, cylinder wheels). Maintain a dense but organized European
-    aesthetic with mixed historic mid-rise and modern high-rise buildings, soft neutral
-    colors, and no futuristic elements. Optionally add a directional light for sunlight
-    and an elevated camera looking toward the city center.  Make sure objects don't
-    clip"
+  sceneDescription: build a simple house
   sceneRoot: {fileID: 1655508569}
 --- !u!4 &603036177
 Transform:
@@ -386,6 +366,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &603036178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 603036175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6ac1fd78087b048a79668193dac1bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SceneLoader
+  apiBaseUrl: http://127.0.0.1:8000/scene/load
+  sessionId: b9ec12d7-d2a8-4a9a-8ecd-13fad05bc7d2
+  sceneBuilder: {fileID: 0}
 --- !u!1 &804749091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1587,7 +1582,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8642888237890314047}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 0}
 --- !u!33 &3469287837255053352
 MeshFilter:
   m_ObjectHideFlags: 0

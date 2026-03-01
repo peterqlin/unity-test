@@ -72,3 +72,25 @@ def save_scene_iteration(
     except Exception as exc:
         logger.warning(f"GCS save failed (non-fatal): {exc}")
         return ""
+
+
+def load_final_scene(session_id: str) -> SceneResponse:
+    """
+    Download scenes/{session_id}/99_final.json from GCS and return the scene.
+    Raises FileNotFoundError if the blob does not exist.
+    """
+    client = _get_client()
+    bucket = client.bucket(settings.GCS_BUCKET)
+    blob_name = f"scenes/{session_id}/99_final.json"
+    blob = bucket.blob(blob_name)
+
+    if not blob.exists():
+        raise FileNotFoundError(f"No final scene found at gs://{settings.GCS_BUCKET}/{blob_name}")
+
+    payload = json.loads(blob.download_as_text(encoding="utf-8"))
+    scene = SceneResponse.model_validate(payload["scene"])
+    logger.info(
+        f"GCS loaded ← gs://{settings.GCS_BUCKET}/{blob_name} "
+        f"({len(scene.objects)} objects, {len(scene.lights)} lights)"
+    )
+    return scene

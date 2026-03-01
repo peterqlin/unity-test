@@ -75,7 +75,7 @@ public class SceneBuilder : MonoBehaviour
         BuildScene(response);
     }
 
-    private void BuildScene(SceneResponseData response)
+    public void BuildScene(SceneResponseData response)
     {
         EnsureSceneRoot();
         ClearScene();
