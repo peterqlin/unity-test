@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # Google Cloud / Vertex AI
     GOOGLE_CLOUD_PROJECT: str
     GOOGLE_CLOUD_LOCATION: str = "us-central1"
+    GCS_BUCKET: str
 
     model_config = SettingsConfigDict(env_file=".env")
 

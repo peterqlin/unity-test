@@ -4,7 +4,8 @@
       "Bash(uv run:*)",
       "Bash(curl:*)",
       "Bash(uv add:*)",
-      "Bash(GOOGLE_CLOUD_PROJECT=test-project uv run:*)"
+      "Bash(GOOGLE_CLOUD_PROJECT=test-project uv run:*)",
+      "Bash(GCS_BUCKET=test-bucket GOOGLE_CLOUD_PROJECT=test-project uv run:*)"
     ]
   }
 }
